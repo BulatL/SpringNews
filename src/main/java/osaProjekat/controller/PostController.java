@@ -87,7 +87,7 @@ public class PostController {
 		return new ResponseEntity<PostDTO>(new PostDTO(post),HttpStatus.CREATED);
 	}
 	
-	@PutMapping(value="/setTags/{postId}/{tagId}",consumes = "application/json")
+	@PostMapping(value="/setTags/{postId}/{tagId}")
 	public ResponseEntity<PostDTO> setTagsInPost(@PathVariable("postId") Long postId,@PathVariable("tagId") Long tagId){
 		Post post = postServiceInterface.findOne(postId);
 		Tag tag = tagServiceInterface.findOne(tagId);
