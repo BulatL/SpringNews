@@ -75,7 +75,7 @@ public class CommentController {
 		comment.setDate(commentDTO.getDate());
 		comment.setLikes(commentDTO.getLikes());
 		comment.setDislikes(commentDTO.getDislikes());
-		comment.setAuthor(userServiceInterface.findOne(commentDTO.getAuthor().getId()));
+		comment.setAuthor(userServiceInterface.findByUsername(commentDTO.getAuthor().getUsername()));
 		comment.setPost(postServiceInterface.findOne(commentDTO.getPost().getId()));
 		
 		comment = commentServiceInterface.save(comment);
@@ -95,7 +95,7 @@ public class CommentController {
 		comment.setDate(commentDTO.getDate());
 		comment.setLikes(commentDTO.getLikes());
 		comment.setDislikes(commentDTO.getDislikes());
-		comment.setAuthor(userServiceInterface.findOne(commentDTO.getAuthor().getId()));
+		comment.setAuthor(userServiceInterface.findByUsername(commentDTO.getAuthor().getUsername()));
 		comment.setPost(postServiceInterface.findOne(commentDTO.getPost().getId()));
 		
 		comment = commentServiceInterface.save(comment);

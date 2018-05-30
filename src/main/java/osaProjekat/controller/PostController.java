@@ -81,7 +81,7 @@ public class PostController {
 		post.setPhoto(postDTO.getPhoto());
 		post.setLongitude(postDTO.getLongitude());
 		post.setLatitude(postDTO.getLatitude());
-		post.setAuthor(userServiceInterface.findOne(postDTO.getAuthor().getId()));
+		post.setAuthor(userServiceInterface.findByUsername(postDTO.getAuthor().getUsername()));
 		
 		post = postServiceInterface.save(post);
 		return new ResponseEntity<PostDTO>(new PostDTO(post),HttpStatus.CREATED);
@@ -120,7 +120,7 @@ public class PostController {
 		post.setPhoto(postDTO.getPhoto());
 		post.setLongitude(postDTO.getLongitude());
 		post.setLatitude(postDTO.getLatitude());
-		post.setAuthor(userServiceInterface.findOne(postDTO.getAuthor().getId()));
+		post.setAuthor(userServiceInterface.findByUsername(postDTO.getAuthor().getUsername()));
 		
 		post = postServiceInterface.save(post);
 		
