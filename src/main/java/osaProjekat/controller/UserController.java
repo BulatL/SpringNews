@@ -63,10 +63,12 @@ public class UserController {
 	    @PostMapping(consumes = "application/json")
 	    public ResponseEntity<UserDTO>saveUser(@RequestBody UserDTO userDTO){
 	        User user=new User();
+	        System.out.println(userDTO.getPhoto());
 	        user.setName(userDTO.getName());
 	        user.setUsername(userDTO.getUsername());
 	        user.setPassword(userDTO.getPassword());
 	        user.setPhoto(userDTO.getPhoto());
+	        user.setRole(userDTO.getRole());
 	        user=userServiceInterface.save(user);
 	        return new ResponseEntity<UserDTO>(new UserDTO(user),HttpStatus.CREATED);
 

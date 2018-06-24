@@ -12,6 +12,8 @@ public interface TagServiceInterface {
 	
 	List<Tag> findByPost_Id(Long tagId);
 	
+	Tag findByName(String name);
+	
 	Tag save(Tag tag);
 	
 	void remove(Long id);

@@ -28,6 +28,11 @@ public class TagService implements TagServiceInterface{
 	public List<Tag> findByPost_Id(Long tagId) {
 		return tagRepository.findByPostsId(tagId);
 	}
+	
+	@Override
+	public Tag findByName(String name) {
+		return tagRepository.findByName(name);
+	}
 
 	@Override
 	public Tag save(Tag tag) {

@@ -1,7 +1,11 @@
 package osaProjekat.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,8 +20,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import osaProjekat.dto.PostDTO;
+import osaProjekat.entity.Comment;
 import osaProjekat.entity.Post;
 import osaProjekat.entity.Tag;
+import osaProjekat.service.CommentServiceInterface;
 import osaProjekat.service.PostServiceInterface;
 import osaProjekat.service.TagServiceInterface;
 import osaProjekat.service.UserServiceInterface;
@@ -36,6 +42,9 @@ public class PostController {
 	@Autowired
 	private TagServiceInterface tagServiceInterface;
 	
+	@Autowired
+	private CommentServiceInterface commentServiceInterface;
+	
 	
 	@GetMapping
 	public ResponseEntity<List<PostDTO>> getAllPosts(){
@@ -48,6 +57,38 @@ public class PostController {
 		
 	}
 	
+	@GetMapping(value="/author/{authorName}")
+	public ResponseEntity<List<PostDTO>> searchPostByAuthor(@PathVariable("authorName") String authorName){
+		List<Post> posts = postServiceInterface.findByAuthor(userServiceInterface.findByUsername(authorName));
+		if(posts.size() < 1) {
+			return new ResponseEntity<List<PostDTO>>(HttpStatus.NOT_FOUND);
+		}else {
+			List<PostDTO> postsDTO = new ArrayList<PostDTO>();
+			for(Post p:posts) {
+				postsDTO.add(new PostDTO(p));
+			}
+			return new ResponseEntity<List<PostDTO>>(postsDTO, HttpStatus.OK);
+		}
+	}
+	
+	@GetMapping(value="/tagName/{tagName}")
+	public ResponseEntity<List<PostDTO>> searchPostByTagName(@PathVariable("tagName") String tagName){
+		System.out.println(tagName + "\n");
+		Tag tag = tagServiceInterface.findByName(tagName);
+		System.out.println("\n"+tag + " \n");
+		List<Post> posts = postServiceInterface.findByTag_Name(tagName);
+		System.out.println("\n"+posts + " \n");
+		if(posts.size() == 0) {
+			return new ResponseEntity<List<PostDTO>>(HttpStatus.NOT_FOUND);
+		}else {
+			List<PostDTO> postsDTO = new ArrayList<PostDTO>();
+			for(Post p:posts) {
+				postsDTO.add(new PostDTO(p));
+			}
+			return new ResponseEntity<List<PostDTO>>(postsDTO, HttpStatus.OK);
+		}
+	}
+	
 	@GetMapping(value="/{id}")
 	public ResponseEntity<PostDTO> getPostById(@PathVariable("id") Long id){
 		Post post = postServiceInterface.findOne(id);
@@ -58,12 +99,48 @@ public class PostController {
 		return new ResponseEntity<PostDTO>(new PostDTO(post),HttpStatus.OK);
 	}
 	
-	@GetMapping(value="/tag/{id}")
+	@GetMapping(value="/tagId/{id}")
 	public ResponseEntity<List<PostDTO>> getPostByTag(@PathVariable("id") Long id){
 		List<Post> postByTag = postServiceInterface.findByTag_Id(id);
-		
+		if(postByTag.size() == 0) {
+			return new ResponseEntity<List<PostDTO>>(HttpStatus.NOT_FOUND);
+		}else {
+			List<PostDTO> postsDTO = new ArrayList<PostDTO>();
+			for(Post p:postByTag) {
+				postsDTO.add(new PostDTO(p));
+			}
+			return new ResponseEntity<List<PostDTO>>(postsDTO,HttpStatus.OK);
+		}
+	}
+	
+	@GetMapping(value="/sort/bycomments")
+	public ResponseEntity<List<PostDTO>> getPostsSortedCom(){
+		List<Post> posts = postServiceInterface.findAll();
+		for(Post p:posts) {
+			List<Comment> comments = commentServiceInterface.findByPost(p);
+			Set<Comment> setComments=new HashSet<Comment>(comments);
+			p.setComments(setComments);
+		}
 		List<PostDTO> postsDTO = new ArrayList<PostDTO>();
-		for(Post p:postByTag) {
+
+		Collections.sort(posts, new Comparator<Post>() {
+			@Override
+			public int compare(Post o1, Post o2) {
+				System.out.println(o1.getComments() +"\n");
+				return o1.getComments().size() - o2.getComments().size();
+			}
+		});
+		for(Post p:posts) {
+			postsDTO.add(new PostDTO(p));
+		}
+		return new ResponseEntity<List<PostDTO>>(postsDTO, HttpStatus.OK);
+	}
+	
+	@GetMapping(value="/sort/bylikes")
+	public ResponseEntity<List<PostDTO>> getPostsSortByLikes(){
+		List<Post> posts = postServiceInterface.findAllByOrderByLikesDesc();
+		List<PostDTO> postsDTO = new ArrayList<>();
+		for(Post p:posts){
 			postsDTO.add(new PostDTO(p));
 		}
 		return new ResponseEntity<List<PostDTO>>(postsDTO,HttpStatus.OK);
@@ -72,7 +149,8 @@ public class PostController {
 	@PostMapping(consumes="application/json")
 	public ResponseEntity<PostDTO> savePost(@RequestBody PostDTO postDTO){
 		Post post = new Post();
-		
+		System.out.println(postDTO.getPhoto() + "\n");
+		System.out.println(postDTO.getPhoto().toString() + "\n");
 		post.setTitle(postDTO.getTitle());
 		post.setDescription(postDTO.getDescription());
 		post.setDate(postDTO.getDate());

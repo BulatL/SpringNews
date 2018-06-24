@@ -11,6 +11,7 @@ public class UserDTO implements Serializable{
 	private String username;
 	private String password;
 	private byte[] photo;
+	private String role;
 	
 	
 	public UserDTO() {
@@ -18,13 +19,14 @@ public class UserDTO implements Serializable{
 	}
 
 
-	public UserDTO(Long id, String name, String username, String password, byte[] photo) {
+	public UserDTO(Long id, String name, String username, String password, byte[] photo, String role) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.username = username;
 		this.password = password;
 		this.photo = photo;
+		this.role = role;
 	}
 
 	public UserDTO(User user) {
@@ -32,9 +34,20 @@ public class UserDTO implements Serializable{
 				user.getName(),
 				user.getUsername(),
 				user.getPassword(),
-				user.getPhoto());
+				user.getPhoto(),
+				user.getRole());
 	}
 	
+	public String getRole() {
+		return role;
+	}
+
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+
 	public Long getId() {
 		return id;
 	}

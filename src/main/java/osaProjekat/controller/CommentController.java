@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import osaProjekat.dto.CommentDTO;
+import osaProjekat.dto.PostDTO;
 import osaProjekat.entity.Comment;
+import osaProjekat.entity.Post;
 import osaProjekat.service.CommentServiceInterface;
 import osaProjekat.service.PostServiceInterface;
 import osaProjekat.service.UserServiceInterface;
@@ -54,6 +57,19 @@ public class CommentController {
 		return new ResponseEntity<CommentDTO>(new CommentDTO(comment), HttpStatus.OK);
 	}
 	
+	@GetMapping(value="/author/{authorName}")
+	public ResponseEntity<List<CommentDTO>> searchCommentByAuthor(@PathVariable("authorName") String authorName){
+		List<Comment> comments = commentServiceInterface.findByAuthor(userServiceInterface.findByUsername(authorName));
+		if(comments.size() == 0) {
+			return new ResponseEntity<List<CommentDTO>>(HttpStatus.NOT_FOUND);
+		}else {
+			List<CommentDTO> commentsDTO = new ArrayList<CommentDTO>();
+			for(Comment c:comments) {
+				commentsDTO.add(new CommentDTO(c));
+			}
+			return new ResponseEntity<List<CommentDTO>>(commentsDTO, HttpStatus.OK);
+		}
+	}
 	
 	@GetMapping(value="/post/{id}")
 	public ResponseEntity<List<CommentDTO>> getCommentsByPostId(@PathVariable("id") Long id){
@@ -65,6 +81,17 @@ public class CommentController {
 		}
 		
 		return new ResponseEntity<List<CommentDTO>>(commentsDTO,HttpStatus.OK);
+	}
+	
+	@GetMapping(value="/post/sort/bylikes/{id}")
+	public ResponseEntity<List<CommentDTO>> getCommentsSortByLikes(@PathVariable("id") Long id){
+		Sort sort = new Sort(Sort.Direction.DESC,"likes");
+		List<Comment> comments = commentServiceInterface.findByPost(postServiceInterface.findOne(id),sort);
+		List<CommentDTO> commentsDTO = new ArrayList<CommentDTO>();
+		for (Comment c : comments) {
+			commentsDTO.add(new CommentDTO(c));
+		}
+		return new ResponseEntity<List<CommentDTO>>(commentsDTO, HttpStatus.OK);
 	}
 	
 	@PostMapping(consumes="application/json")

@@ -12,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -34,9 +35,12 @@ public class User implements Serializable{
 	@Column(name="password", unique=false, nullable=false)
 	private String password;
 	  
-	  
+	@Lob  
 	@Column(name="photo", unique=false, nullable=true)
 	private byte[] photo;
+	
+	@Column(name="role", unique=false, nullable=false)
+	private String role;
 	
 	@OneToMany(cascade = {CascadeType.ALL},fetch = FetchType.LAZY,mappedBy = "author")
     private Set<Comment> comments=new HashSet<Comment>();
@@ -46,6 +50,30 @@ public class User implements Serializable{
 	
 	public User() {
 		  
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	public Set<Comment> getComments() {
+		return comments;
+	}
+
+	public void setComments(Set<Comment> comments) {
+		this.comments = comments;
+	}
+
+	public Set<Post> getPosts() {
+		return posts;
+	}
+
+	public void setPosts(Set<Post> posts) {
+		this.posts = posts;
 	}
 
 	public Long getId() {
